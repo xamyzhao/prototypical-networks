@@ -75,6 +75,8 @@ def extract_episode(n_support, n_query, d):
 
     return {
         'class': d['class'],
+		'class_s': [d['class']] * len(support_inds),
+		'class_q': [d['class']] * len(query_inds),
         'xs': xs,
         'xq': xq
     }
@@ -124,6 +126,24 @@ def load(opt, splits):
             sampler = EpisodicBatchSampler(len(ds), n_way, n_episodes)
 
         # use num_workers=0, otherwise may receive duplicate episodes
-        ret[split] = torch.utils.data.DataLoader(ds, batch_sampler=sampler, num_workers=0)
+        ret[split] = torch.utils.data.DataLoader(ds, batch_sampler=sampler, num_workers=0, collate_fn=collate_support_query)
 
     return ret
+
+def collate_support_query(datapoint_list):
+	batch = {}
+	batch['xs'] = torch.cat([d['xs'] for d in datapoint_list], dim=0)
+	batch['xq'] = torch.cat([d['xq'] for d in datapoint_list], dim=0)
+	batch['class_s'] = []
+	for d in datapoint_list:
+		batch['class_s'] += d['class_s']  # concatenate all lists end to end
+
+	batch['class_q'] = []
+	for d in datapoint_list:
+		batch['class_q'] += d['class_q']  # concatenate all lists end to end
+
+	batch['class'] = [d['class'] for d in datapoint_list]
+	return batch
+	
+	
+

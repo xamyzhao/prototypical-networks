@@ -5,12 +5,14 @@ from train import main
 parser = argparse.ArgumentParser(description='Train prototypical networks')
 
 # data args
-default_dataset = 'omniglot'
+default_dataset = 'omniglot_amy'
 parser.add_argument('--data.dataset', type=str, default=default_dataset, metavar='DS',
                     help="data set name (default: {:s})".format(default_dataset))
 default_split = 'vinyals'
 parser.add_argument('--data.split', type=str, default=default_split, metavar='SP',
                     help="split name (default: {:s})".format(default_split))
+parser.add_argument('--data.languages', nargs='?', default='Latin',
+                    help="list of languages to include")
 parser.add_argument('--data.way', type=int, default=60, metavar='WAY',
                     help="number of classes per episode (default: 60)")
 parser.add_argument('--data.shot', type=int, default=5, metavar='SHOT',
